@@ -1,0 +1,7 @@
+.buildozer/
+bin/
+data/
+*.apk
+__pycache__/
+*.pyc
+.kivy/
