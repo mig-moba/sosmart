@@ -48,17 +48,25 @@ def _make_listener(on_update):
     return _Listener()
 
 
-def _request_updates(listener, min_time_ms, min_distance_m):
+def _request_updates(listener, min_time_ms, min_distance_m, context=None):
     """Registra el listener en todos los proveedores de ubicacion
     disponibles. Devuelve el LocationManager usado (para poder detener las
-    actualizaciones despues), o None si no fue posible."""
+    actualizaciones despues), o None si no fue posible.
+
+    'context' es el Context de Android a usar (Activity o Service). Si no
+    se indica, se usa la Activity principal (plyer.platforms.android.activity) —
+    valido solo quien llama desde el proceso de la app, no desde un
+    servicio en segundo plano, que corre en su propio proceso."""
     from jnius import autoclass
-    from plyer.platforms.android import activity
 
     Looper = autoclass('android.os.Looper')
-    Context = autoclass('android.content.Context')
+    AndroidContext = autoclass('android.content.Context')
 
-    location_manager = activity.getSystemService(Context.LOCATION_SERVICE)
+    if context is None:
+        from plyer.platforms.android import activity
+        context = activity
+
+    location_manager = context.getSystemService(AndroidContext.LOCATION_SERVICE)
     providers = location_manager.getProviders(False).toArray()
 
     if not providers:
@@ -72,7 +80,7 @@ def _request_updates(listener, min_time_ms, min_distance_m):
     return location_manager
 
 
-def get_location_once(timeout=20):
+def get_location_once(timeout=20, context=None):
     """Pide una sola lectura de GPS y espera hasta 'timeout' segundos."""
     result = {"fix": None}
     done = threading.Event()
@@ -86,7 +94,9 @@ def get_location_once(timeout=20):
 
     try:
         listener = _make_listener(_report)
-        location_manager = _request_updates(listener, min_time_ms=1000, min_distance_m=0)
+        location_manager = _request_updates(
+            listener, min_time_ms=1000, min_distance_m=0, context=context
+        )
         if location_manager is None:
             return None
         print("[SOSmart] GPS: solicitud de ubicacion iniciada, esperando fix...")
@@ -106,14 +116,14 @@ def get_location_once(timeout=20):
     return result["fix"]
 
 
-def start_tracking(on_update, min_time_ms=60000, min_distance_m=20):
+def start_tracking(on_update, min_time_ms=60000, min_distance_m=20, context=None):
     """Deja el GPS escuchando de forma continua. on_update(lat, lon) se
     llama cada vez que hay una lectura nueva (puede ser desde otro hilo).
     Devuelve un 'handle' que se debe pasar a stop_tracking(), o None si no
     se pudo iniciar."""
     try:
         listener = _make_listener(on_update)
-        location_manager = _request_updates(listener, min_time_ms, min_distance_m)
+        location_manager = _request_updates(listener, min_time_ms, min_distance_m, context=context)
         if location_manager is None:
             return None
         return (location_manager, listener)

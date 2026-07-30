@@ -13,7 +13,9 @@ requirements = python3==3.11.9,hostpython3==3.11.9,kivy,plyer,pyjnius
 orientation = portrait
 fullscreen = 0
 
-android.permissions = INTERNET,RECORD_AUDIO,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,SEND_SMS,FOREGROUND_SERVICE
+services = Tracking:service/tracking_service.py
+
+android.permissions = INTERNET,RECORD_AUDIO,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,SEND_SMS,FOREGROUND_SERVICE,FOREGROUND_SERVICE_LOCATION
 
 android.api = 33
 android.minapi = 24

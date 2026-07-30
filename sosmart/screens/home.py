@@ -5,6 +5,7 @@ from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen
 
+from .. import service_control
 from ..keyword_detector import listen_once, matches_keyword
 from ..shake_trigger import ShakeTrigger
 from ..volume_trigger import VolumeTripleTrigger
@@ -54,6 +55,15 @@ KV = """
             on_release: root.listen_for_keyword()
 
         Button:
+            id: stop_tracking_button
+            text: "Detener seguimiento activo"
+            size_hint_y: 0.12
+            background_color: 0.5, 0.1, 0.1, 1
+            opacity: 0
+            disabled: True
+            on_release: root.stop_tracking()
+
+        Button:
             text: "Configuracion"
             size_hint_y: 0.12
             on_release: root.manager.current = "settings"
@@ -71,6 +81,7 @@ class HomeScreen(Screen):
         config = App.get_running_app().config_data
         self.ids.keyword_label.text = f"Palabra clave: {config.get('keyword', '')}"
         self.ids.status_label.text = "Presiona SOS o escucha tu palabra clave"
+        self._refresh_tracking_button()
 
         if config.get("volume_trigger_enabled", True):
             self._volume_trigger.enable()
@@ -85,6 +96,15 @@ class HomeScreen(Screen):
     def on_leave(self, *args):
         self._volume_trigger.disable()
         self._shake_trigger.disable()
+
+    def _refresh_tracking_button(self):
+        active = service_control.is_tracking_active()
+        self.ids.stop_tracking_button.opacity = 1 if active else 0
+        self.ids.stop_tracking_button.disabled = not active
+
+    def stop_tracking(self):
+        service_control.stop_tracking_service()
+        self._refresh_tracking_button()
 
     def trigger_manual_alert(self):
         self.manager.current = "alert"
