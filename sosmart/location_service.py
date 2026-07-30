@@ -22,16 +22,19 @@ def get_location_once(timeout=20):
             done.set()
 
     def on_status(stype, status):
-        pass
+        print(f"[SOSmart] GPS status: {stype} = {status}")
 
     try:
         gps.configure(on_location=on_location, on_status=on_status)
         gps.start(minTime=1000, minDistance=0)
+        print("[SOSmart] GPS: solicitud de ubicacion iniciada, esperando fix...")
     except Exception as exc:
         print(f"[SOSmart] GPS no disponible: {exc}")
         return None
 
-    done.wait(timeout)
+    if not done.wait(timeout):
+        print(f"[SOSmart] GPS: no se recibio ninguna lectura en {timeout}s "
+              f"(revisa que la Ubicacion este activada en el sistema, no solo el permiso de la app)")
 
     try:
         gps.stop()

@@ -34,22 +34,36 @@ KV = """
             font_size: "18sp"
 
         Button:
+            id: action_button
             text: "Cancelar"
             size_hint_y: 0.2
             on_release: root.cancel()
 """
 Builder.load_string(KV)
 
+RECORDING_SECONDS = 60
+
 
 class AlertScreen(Screen):
     _event = None
+    _recording_stop_event = None
 
     def on_pre_enter(self, *args):
         config = App.get_running_app().config_data
         self._remaining = config.get("countdown_seconds", 5)
         self.ids.countdown_label.text = str(self._remaining)
         self.ids.status_label.text = "Enviando alerta en..."
+        self.ids.action_button.text = "Cancelar"
         self._event = Clock.schedule_interval(self._tick, 1)
+
+    def on_leave(self, *args):
+        # Red de seguridad: si salimos de esta pantalla por cualquier via
+        # (cancelar, volver, etc.) nos aseguramos de no dejar el microfono
+        # grabando en segundo plano.
+        if self._recording_stop_event:
+            self._recording_stop_event.cancel()
+            self._recording_stop_event = None
+        audio_recorder.stop_recording()
 
     def _tick(self, dt):
         self._remaining -= 1
@@ -67,7 +81,12 @@ class AlertScreen(Screen):
     def _send_alert(self):
         self.ids.status_label.text = "Enviando alerta..."
         audio_recorder.start_recording()
+        self._recording_stop_event = Clock.schedule_once(self._stop_recording, RECORDING_SECONDS)
         threading.Thread(target=self._send_worker, daemon=True).start()
+
+    def _stop_recording(self, *args):
+        audio_recorder.stop_recording()
+        self._recording_stop_event = None
 
     def _send_worker(self):
         config = App.get_running_app().config_data
@@ -77,6 +96,7 @@ class AlertScreen(Screen):
     def _on_sent(self, result):
         sent = sum(1 for _, ok in result["results"] if ok)
         total = len(result["results"])
+        self.ids.action_button.text = "Volver"
         if total == 0:
             self.ids.status_label.text = "Alerta procesada (sin contactos configurados)"
         else:
