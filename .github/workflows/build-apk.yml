@@ -8,6 +8,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      # Evita que "pip install -U pip" (invocado internamente por
+      # python-for-android dentro de su venv de compilacion) se actualice a
+      # una version de pip rota/mas nueva. Ver constraints.txt.
+      PIP_CONSTRAINT: ${{ github.workspace }}/constraints.txt
     steps:
       - uses: actions/checkout@v4
 
