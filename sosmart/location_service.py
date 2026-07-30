@@ -6,7 +6,7 @@ except Exception:
     gps = None
 
 
-def get_location_once(timeout=10):
+def get_location_once(timeout=20):
     """Intenta obtener una sola lectura de GPS. Devuelve (lat, lon) o None."""
     if gps is None:
         return None

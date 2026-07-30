@@ -3,7 +3,7 @@ from . import sms_service
 
 
 def build_message(user_label="Usuario de SOSmart"):
-    fix = location_service.get_location_once(timeout=10)
+    fix = location_service.get_location_once(timeout=20)
     link = location_service.location_to_maps_link(fix)
     if link:
         return f"ALERTA SOSmart: {user_label} necesita ayuda. Ubicacion: {link}"
