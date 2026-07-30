@@ -14,6 +14,9 @@ DEFAULT_CONFIG = {
     "shake_trigger_enabled": True,
     "listen_seconds": 8,
     "countdown_seconds": 5,
+    "live_tracking_enabled": True,
+    "live_tracking_interval_seconds": 180,
+    "live_tracking_duration_minutes": 15,
 }
 
 
