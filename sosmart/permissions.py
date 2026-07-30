@@ -34,20 +34,37 @@ def show_over_lock_screen():
     """
     try:
         from jnius import autoclass
+        from android.runnable import run_on_ui_thread
     except Exception:
         return  # No es Android.
 
-    try:
-        PythonActivity = autoclass('org.kivy.android.PythonActivity')
-        LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
-        activity = PythonActivity.mActivity
+    @run_on_ui_thread
+    def _apply():
+        try:
+            PythonActivity = autoclass('org.kivy.android.PythonActivity')
+            LayoutParams = autoclass('android.view.WindowManager$LayoutParams')
+            VERSION = autoclass('android.os.Build$VERSION')
+            activity = PythonActivity.mActivity
 
-        window = activity.getWindow()
-        window.addFlags(
-            LayoutParams.FLAG_SHOW_WHEN_LOCKED
-            | LayoutParams.FLAG_TURN_SCREEN_ON
-            | LayoutParams.FLAG_DISMISS_KEYGUARD
-            | LayoutParams.FLAG_KEEP_SCREEN_ON
-        )
-    except Exception as exc:
-        print(f"[SOSmart] No se pudo configurar mostrar sobre pantalla bloqueada: {exc}")
+            window = activity.getWindow()
+            window.addFlags(
+                LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                | LayoutParams.FLAG_TURN_SCREEN_ON
+                | LayoutParams.FLAG_DISMISS_KEYGUARD
+                | LayoutParams.FLAG_KEEP_SCREEN_ON
+            )
+
+            # API 27+: forma recomendada actual, mas confiable que las
+            # banderas de WindowManager en versiones recientes de Android.
+            if VERSION.SDK_INT >= 27:
+                activity.setShowWhenLocked(True)
+                activity.setTurnScreenOn(True)
+
+            print("[SOSmart] Configurado para mostrarse sobre la pantalla bloqueada")
+        except Exception as exc:
+            print(f"[SOSmart] No se pudo configurar mostrar sobre pantalla bloqueada: {exc}")
+
+    # addFlags()/setShowWhenLocked() deben ejecutarse en el hilo de UI de
+    # Android; llamarlos desde el hilo donde corre build() puede fallar en
+    # silencio o no surtir efecto.
+    _apply()
