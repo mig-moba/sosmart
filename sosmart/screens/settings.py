@@ -47,6 +47,15 @@ KV = """
                 text: "Activar con triple pulsacion del boton de volumen (experimental)"
 
         Label:
+            text: "Numero de llamada rapida"
+            size_hint_y: 0.06
+        TextInput:
+            id: emergency_phone_input
+            hint_text: "Ej. +524421234567"
+            multiline: False
+            size_hint_y: 0.08
+
+        Label:
             text: "Contactos de emergencia"
             size_hint_y: 0.06
 
@@ -93,6 +102,7 @@ class SettingsScreen(Screen):
         self.ids.keyword_input.text = config.get("keyword", "")
         self.ids.shake_checkbox.active = config.get("shake_trigger_enabled", True)
         self.ids.volume_checkbox.active = config.get("volume_trigger_enabled", True)
+        self.ids.emergency_phone_input.text = config.get("emergency_phone", "")
         self._refresh_contacts()
 
     def _refresh_contacts(self):
@@ -130,5 +140,6 @@ class SettingsScreen(Screen):
         config["keyword"] = self.ids.keyword_input.text.strip() or config.get("keyword", "")
         config["shake_trigger_enabled"] = self.ids.shake_checkbox.active
         config["volume_trigger_enabled"] = self.ids.volume_checkbox.active
+        config["emergency_phone"] = self.ids.emergency_phone_input.text.strip()
         save_config(config)
         self.manager.current = "home"

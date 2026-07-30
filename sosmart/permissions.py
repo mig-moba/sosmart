@@ -19,6 +19,7 @@ def request_android_permissions():
         Permission.ACCESS_FINE_LOCATION,
         Permission.ACCESS_COARSE_LOCATION,
         Permission.SEND_SMS,
+        Permission.CALL_PHONE,
     ])
 
 

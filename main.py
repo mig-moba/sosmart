@@ -21,6 +21,19 @@ class SOSmartApp(App):
         sm.current = "home"
         return sm
 
+    def on_pause(self):
+        # Al salir de la app (boton de inicio, cambiar de app, etc.) se
+        # detiene la escucha de la palabra clave; no debe seguir usando el
+        # microfono en segundo plano. El seguimiento de ubicacion en vivo
+        # (si esta activo) sigue corriendo aparte, en el servicio.
+        home_screen = self.root.get_screen("home")
+        home_screen.stop_auto_listening()
+        return True
+
+    def on_stop(self):
+        home_screen = self.root.get_screen("home")
+        home_screen.stop_auto_listening()
+
 
 if __name__ == "__main__":
     SOSmartApp().run()

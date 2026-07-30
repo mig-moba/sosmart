@@ -17,6 +17,7 @@ DEFAULT_CONFIG = {
     "live_tracking_enabled": True,
     "live_tracking_interval_seconds": 180,
     "live_tracking_duration_minutes": 15,
+    "emergency_phone": "",
 }
 
 
