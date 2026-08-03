@@ -1,3 +1,10 @@
+"""Orquesta el envio de la alerta inicial: arma el mensaje (con o sin
+ubicacion, segun si el GPS respondio a tiempo) y lo manda por SMS a todos
+los contactos configurados. Las actualizaciones de ubicacion posteriores
+(seguimiento en tiempo real) las maneja aparte el servicio en segundo
+plano, ver service/tracking_service.py.
+"""
+
 from . import location_service
 from . import sms_service
 

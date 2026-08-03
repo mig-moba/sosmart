@@ -1,3 +1,9 @@
+"""Pantalla de configuracion: palabra clave, numero de llamada rapida,
+contactos de emergencia y que disparadores alternativos (sacudida,
+volumen) estan activos. Los cambios solo se guardan al presionar
+"Guardar" (save_config); "Cancelar" descarta lo editado en pantalla.
+"""
+
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout

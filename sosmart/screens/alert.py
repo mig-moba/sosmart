@@ -1,3 +1,9 @@
+"""Pantalla de alerta: cuenta regresiva cancelable, envio del SMS inicial
+con ubicacion, grabacion de audio y arranque del servicio de seguimiento
+en tiempo real (ver sosmart/service_control.py y
+service/tracking_service.py) una vez que la alerta ya se envio.
+"""
+
 import threading
 
 from kivy.app import App

@@ -1,3 +1,10 @@
+"""Pantalla principal: boton SOS, llamada rapida, escucha de la palabra
+clave y los disparadores pasivos (sacudida, volumen). La escucha de voz
+se activa sola una vez por sesion al abrir la app; despues de eso solo se
+reactiva a mano (boton) o reabriendo la app, para no seguir escuchando
+una palabra clave vieja si el usuario la cambia en Configuracion.
+"""
+
 import threading
 
 from kivy.app import App

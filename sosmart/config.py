@@ -1,3 +1,9 @@
+"""Configuracion persistente de la app (palabra clave, contactos, ajustes
+de los distintos disparadores). Se guarda como JSON en el almacenamiento
+privado de la app (user_data_dir de Kivy en Android; una carpeta local
+'data/' cuando se corre en escritorio para pruebas).
+"""
+
 import json
 import os
 

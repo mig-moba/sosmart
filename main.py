@@ -1,3 +1,11 @@
+"""Punto de entrada de SOSmart.
+
+Arma el ScreenManager con las tres pantallas (Home, Settings, Alert),
+carga la configuracion guardada y hace la preparacion especifica de
+Android que debe correr una sola vez al iniciar la app (pedir permisos,
+configurar que se muestre sobre la pantalla bloqueada).
+"""
+
 from kivy.app import App
 from kivy.uix.screenmanager import NoTransition, ScreenManager
 
